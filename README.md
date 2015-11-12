@@ -39,7 +39,6 @@ distributed lock, segmentation lock, Base on Redis or Memcached
   		//直接对以下代码（dosomething）进行加锁
   		codeLock.lock();
   		dosomething();
-  		codeLock.releaseLock();
   		
   	} catch (Exception e) {
   		e.printStackTrace();
