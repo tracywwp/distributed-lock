@@ -21,7 +21,7 @@ distributed lock, segmentation lock, Base on Redis or Memcached
   	
   	try {
   		//尝试加锁直到5秒后超时加锁失败
-  		while(objectSegmentationLock.tryLock(5000)) {
+  		if(objectSegmentationLock.tryLock(5000)) {
   			dosomething();
   		}
   		
@@ -49,7 +49,7 @@ distributed lock, segmentation lock, Base on Redis or Memcached
   	
   	try {
   		//直接对以下代码（dosomething）尝试加锁 直到5秒后超时加锁失败
-  		while(codeLock.tryLock(5000)) {
+  		if(codeLock.tryLock(5000)) {
   			dosomething();
   		}
   		
