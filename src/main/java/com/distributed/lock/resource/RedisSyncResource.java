@@ -1,31 +1,56 @@
 package com.distributed.lock.resource;
 
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+
 import com.alibaba.fastjson.JSONObject;
-import com.qding.framework.common.redis.ShardedJedisClient;
 
 public class RedisSyncResource implements SyncResource{
 
-	private ShardedJedisClient jedis;
+	private JedisPool jedis;
 	
 	public boolean compareAndSwap(String key, Locker value) {
-		return jedis.setnx(key, JSONObject.toJSONString(value)) == 1l;
+		Jedis jd = null;
+		try {
+			jd = jedis.getResource();
+			return jd.setnx(key, JSONObject.toJSONString(value)) == 1l;
+		} finally {
+			if(jd != null)
+				jedis.returnResource(jd);
+		}
 	}
 
 	public Locker get(String key) {
-		String value = jedis.get(key);
-		if(value == null) return null;
-		return JSONObject.parseObject(value, Locker.class);
+		Jedis jd = null;
+		try {
+			jd = jedis.getResource();
+			String value = jd.get(key);
+			if(value == null) return null;
+			return JSONObject.parseObject(value, Locker.class);
+		}
+		finally {
+			if(jd != null)
+				jedis.returnResource(jd);
+		}
 	}
 
 	public boolean delete(String key) {
-		return jedis.del(key) > 0;
+		Jedis jd = null;
+		try {
+			jd = jedis.getResource();
+			return jd.del(key) > 0;
+		}
+		finally {
+			if(jd != null)
+				jedis.returnResource(jd);
+		}
 	}
 
-	public void setJedis(ShardedJedisClient jedis) {
+	public void setJedis(JedisPool jedis) {
 		this.jedis = jedis;
 	}
 	
-	public ShardedJedisClient getJedis() {
+	public JedisPool getJedis() {
 		return jedis;
 	}
 }
