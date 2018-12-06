@@ -1,5 +1,6 @@
 # distributed-lock
 distributed lock, segmentation lock, Base on Redis or Memcached
+分布式锁，分段锁
 
 # example
 
